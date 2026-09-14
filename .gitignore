@@ -9,3 +9,4 @@ prisma/dev.db-journal
 .env.local
 *.log
 .DS_Store
+tsconfig.tsbuildinfo

@@ -1,6 +1,7 @@
 export interface TimelineItem {
   time: string; // pre-formatted, e.g. "6:00 pm"
   title: string; // e.g. "Guest Arrival and Welcome Drinks"
+  iconUrl?: string; // optional illustrated icon for this timeline moment
 }
 
 export interface InviteData {
@@ -16,12 +17,14 @@ export interface InviteData {
   themeColor: string; // hex
   rsvpUrl: string;
   heroImageUrl?: string; // couple/venue photo shown on the reveal scene, if the host uploaded one
+  envelopeImageUrl?: string; // illustrated/embossed envelope texture, if provided (falls back to a CSS gradient envelope)
   quote?: string;
   quoteAttribution?: string;
   timeline: TimelineItem[];
   dressCode?: string;
   dressCodeColors: string[];
   dressCodeNote?: string;
+  dressCodeImageUrl?: string; // illustrated outfit figures, if provided
   giftListUrl?: string;
 }
 
