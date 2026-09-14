@@ -10,3 +10,4 @@ prisma/dev.db-journal
 *.log
 .DS_Store
 tsconfig.tsbuildinfo
+.claude/
