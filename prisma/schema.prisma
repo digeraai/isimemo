@@ -1,0 +1,80 @@
+// isiMemo data model
+// Provider is Postgres to match the Railway deployment target. For local dev
+// without a local Postgres, either point DATABASE_URL at the same Railway
+// Postgres instance (fine for a solo-founder MVP) or run Postgres locally
+// (e.g. `docker run -p 5432:5432 -e POSTGRES_PASSWORD=postgres postgres`).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Tier {
+  STARTER // up to 25 guests
+  ESSENTIAL // up to 75
+  PLUS // up to 150
+  PREMIUM // up to 300
+  GRAND // up to 500
+}
+
+enum EventStatus {
+  DRAFT // being set up, not paid
+  PAID // paid, ready to generate
+  GENERATING // background render in progress
+  READY // all invites generated
+}
+
+enum RsvpStatus {
+  PENDING
+  ATTENDING
+  DECLINED
+}
+
+model Event {
+  id            String      @id @default(uuid())
+  manageToken   String      @unique @default(uuid()) // secret link the host uses to manage this event (MVP has no full auth)
+  templateSlug  String
+  status        EventStatus @default(DRAFT)
+  tier          Tier?
+  title         String // e.g. "Naledi & Kagiso's Wedding"
+  hostNames     String
+  eventDate     DateTime
+  venueName     String?
+  venueAddress  String?
+  message       String?
+  rsvpDeadline  DateTime?
+  themeColor    String      @default("maroon")
+  photoUrls     String      @default("[]") // JSON array, up to 3 — photoUrls[0] doubles as the hero/reveal image
+  quote         String? // e.g. a scripture verse, poem line, or personal note shown after the formal invite text
+  quoteAttribution String? // e.g. "Surah An-Naba 78:8"
+  timeline      String      @default("[]") // JSON array of { time: string, title: string }
+  dressCode     String? // free-text description, e.g. "Traditional attire in soft pastel shades"
+  dressCodeColors String    @default("[]") // JSON array of hex strings, recommended palette swatches
+  dressCodeNote String? // e.g. "Please avoid beige — reserved for the bride and groom"
+  giftListUrl   String? // optional external link, e.g. a registry
+  stripeSessionId String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  guests        Guest[]
+}
+
+model Guest {
+  id           String     @id @default(uuid())
+  eventId      String
+  event        Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name         String
+  email        String?
+  phone        String?
+  language     String     @default("en")
+  token        String     @unique @default(uuid()) // guest's unique public link/QR token
+  rsvpStatus   RsvpStatus @default(PENDING)
+  rsvpGuests   Int        @default(1) // party size the guest confirms for
+  rsvpNote     String?
+  imageUrl     String? // generated static PNG, once rendered
+  generatedAt  DateTime?
+  createdAt    DateTime   @default(now())
+}
