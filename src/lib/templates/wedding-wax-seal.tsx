@@ -3,7 +3,7 @@
 import React from "react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Cormorant_Garamond, Parisienne } from "next/font/google";
+import { Amiri, Cormorant_Garamond, Parisienne } from "next/font/google";
 import type { InviteData } from "./types";
 import { ScratchCard } from "./components/ScratchCard";
 import { Countdown } from "./components/Countdown";
@@ -19,6 +19,7 @@ export { meta } from "./wedding-wax-seal.meta";
 // token) so other templates aren't affected.
 const script = Parisienne({ subsets: ["latin"], weight: "400" });
 const serif = Cormorant_Garamond({ subsets: ["latin"], weight: ["400", "500", "600"], style: ["normal", "italic"] });
+const arabic = Amiri({ subsets: ["arabic"], weight: "700" });
 
 function initials(hostNames: string) {
   const parts = hostNames.split(/&| and /i).map((p) => p.trim()).filter(Boolean);
@@ -64,15 +65,26 @@ function CornerFlourish({ className = "" }: { className?: string }) {
 }
 
 // Gold-bordered card with corner flourishes — the recurring "framed" look
-// used for the formal wording and the map.
-function OrnateCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+// used for the formal wording, gift preferences, RSVP lead-in, and the map.
+// An optional backgroundUrl (e.g. an illustrated arch) sits behind the
+// content; content stays on its own stacking layer so it's always legible.
+function OrnateCard({
+  children,
+  className = "",
+  backgroundUrl,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  backgroundUrl?: string;
+}) {
   return (
-    <div className={`relative border border-gold/40 rounded-[2rem] px-8 py-12 bg-white/30 ${className}`}>
+    <div className={`relative overflow-hidden border border-gold/40 rounded-[2rem] px-8 py-12 bg-white/30 ${className}`}>
+      {backgroundUrl && <img src={backgroundUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />}
       <CornerFlourish className="absolute top-2 left-2 w-8 h-8 text-gold/60" />
       <CornerFlourish className="absolute top-2 right-2 w-8 h-8 text-gold/60 -scale-x-100" />
       <CornerFlourish className="absolute bottom-2 left-2 w-8 h-8 text-gold/60 -scale-y-100" />
       <CornerFlourish className="absolute bottom-2 right-2 w-8 h-8 text-gold/60 -scale-x-100 -scale-y-100" />
-      {children}
+      <div className="relative">{children}</div>
     </div>
   );
 }
@@ -234,9 +246,9 @@ export function Live({ data }: { data: InviteData }) {
                 <p className={`${script.className} text-3xl text-maroon mb-1`}>The Date</p>
                 <p className="text-[11px] uppercase tracking-widest text-maroon/50 mb-8">✦ Scratch to reveal the date ✦</p>
                 <div className="flex gap-3 max-w-xs mx-auto">
-                  <ScratchCard label="Day" value={day} foilColor="#c9a35a" textColor="#7a1f2b" />
-                  <ScratchCard label="Month" value={month} foilColor="#c9a35a" textColor="#7a1f2b" />
-                  <ScratchCard label="Year" value={year} foilColor="#c9a35a" textColor="#7a1f2b" />
+                  <ScratchCard label="Day" value={day} foilColor="#c9a35a" foilImageUrl={data.scratchFoilImageUrl} textColor="#7a1f2b" />
+                  <ScratchCard label="Month" value={month} foilColor="#c9a35a" foilImageUrl={data.scratchFoilImageUrl} textColor="#7a1f2b" />
+                  <ScratchCard label="Year" value={year} foilColor="#c9a35a" foilImageUrl={data.scratchFoilImageUrl} textColor="#7a1f2b" />
                 </div>
               </Reveal>
             </section>
@@ -244,7 +256,7 @@ export function Live({ data }: { data: InviteData }) {
             {/* Formal invitation text */}
             <section className="px-6 py-20 text-center bg-white/40">
               <Reveal className="max-w-md mx-auto">
-                <OrnateCard>
+                <OrnateCard backgroundUrl={data.frameBackgroundUrl}>
                   <p className="text-[11px] uppercase tracking-widest text-maroon/50 mb-6">You are invited to the wedding of</p>
                   <h2 className={`${script.className} text-4xl text-maroon mb-6`}>{data.hostNames}</h2>
                   {data.message && <p className="text-base text-maroon/70 italic mb-8">&ldquo;{data.message}&rdquo;</p>}
@@ -258,6 +270,12 @@ export function Live({ data }: { data: InviteData }) {
             {data.quote && (
               <section className="px-6 py-16 text-center">
                 <Reveal className="max-w-sm mx-auto">
+                  <FlourishDivider />
+                  {data.quoteArabic && (
+                    <p dir="rtl" className={`${arabic.className} text-3xl sm:text-4xl text-maroon mb-4 leading-relaxed`}>
+                      {data.quoteArabic}
+                    </p>
+                  )}
                   <p className="text-xl italic text-maroon/90 leading-relaxed">&ldquo;{data.quote}&rdquo;</p>
                   {data.quoteAttribution && (
                     <p className="text-xs uppercase tracking-widest text-maroon/50 mt-4">{data.quoteAttribution}</p>
@@ -310,6 +328,13 @@ export function Live({ data }: { data: InviteData }) {
                   <p className={`${script.className} text-3xl text-maroon mb-2`}>Location</p>
                   {data.venueName && <p className="text-lg text-maroon mb-1">{data.venueName}</p>}
                   {data.venueAddress && <p className="text-sm text-maroon/60 mb-6">{data.venueAddress}</p>}
+                  {data.venuePhotoUrl && (
+                    <img
+                      src={data.venuePhotoUrl}
+                      alt=""
+                      className="w-full aspect-[4/3] object-cover rounded-2xl mb-4 shadow-md"
+                    />
+                  )}
                   {mapQuery && (
                     <div className="relative border border-gold/40 rounded-2xl p-2">
                       <CornerFlourish className="absolute top-1 left-1 w-6 h-6 text-gold/60 z-10" />
@@ -346,28 +371,32 @@ export function Live({ data }: { data: InviteData }) {
             {data.giftListUrl && (
               <section className="px-6 py-16 text-center bg-white/40">
                 <Reveal className="max-w-sm mx-auto">
-                  <p className={`${script.className} text-3xl text-maroon mb-4`}>Gift Preferences</p>
-                  <p className="text-sm text-maroon/70 mb-6">
-                    Your love, prayers, and presence mean the world to us. If you wish to bless us with a gift, we have
-                    created a list for your convenience.
-                  </p>
-                  <a
-                    href={data.giftListUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-block text-xs uppercase tracking-widest underline underline-offset-4 text-maroon"
-                  >
-                    View Gift List
-                  </a>
+                  <OrnateCard>
+                    <p className={`${script.className} text-3xl text-maroon mb-4`}>Gift Preferences</p>
+                    <p className="text-sm text-maroon/70 mb-6">
+                      Your love, prayers, and presence mean the world to us. If you wish to bless us with a gift, we
+                      have created a list for your convenience.
+                    </p>
+                    <a
+                      href={data.giftListUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-block text-xs uppercase tracking-widest underline underline-offset-4 text-maroon"
+                    >
+                      View Gift List
+                    </a>
+                  </OrnateCard>
                 </Reveal>
               </section>
             )}
 
             {/* RSVP lead-in — the form itself is appended by the page below */}
             <section className="px-6 pt-20 text-center">
-              <Reveal>
-                <p className={`${script.className} text-3xl text-maroon mb-3`}>Confirm Your Attendance</p>
-                <p className="text-sm text-maroon/60">We can&rsquo;t wait to celebrate with you.</p>
+              <Reveal className="max-w-sm mx-auto">
+                <OrnateCard>
+                  <p className={`${script.className} text-3xl text-maroon mb-3`}>Confirm Your Attendance</p>
+                  <p className="text-sm text-maroon/60">We can&rsquo;t wait to celebrate with you.</p>
+                </OrnateCard>
               </Reveal>
             </section>
           </motion.div>

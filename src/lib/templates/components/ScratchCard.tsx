@@ -9,12 +9,14 @@ export function ScratchCard({
   label,
   value,
   foilColor = "#c9a35a",
+  foilImageUrl,
   textColor = "#4a2c1a",
   revealThreshold = 0.4,
 }: {
   label: string;
   value: string;
   foilColor?: string;
+  foilImageUrl?: string; // texture drawn over the foil instead of the plain gradient, if provided
   textColor?: string;
   revealThreshold?: number;
 }) {
@@ -39,7 +41,8 @@ export function ScratchCard({
     if (!ctx) return;
     ctx.scale(dpr, dpr);
 
-    // Foil coating with a subtle diagonal shimmer.
+    // Foil coating with a subtle diagonal shimmer (placeholder while any
+    // image texture loads, and the permanent look when none is provided).
     const grad = ctx.createLinearGradient(0, 0, rect.width, rect.height);
     grad.addColorStop(0, foilColor);
     grad.addColorStop(0.5, "#e9cf8f");
@@ -50,6 +53,21 @@ export function ScratchCard({
     ctx.font = "600 11px sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("scratch", rect.width / 2, rect.height / 2);
+
+    let cancelled = false;
+    if (foilImageUrl) {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        if (cancelled) return;
+        // Cover-fit: crop the image to fill the tile without distortion.
+        const scale = Math.max(rect.width / img.width, rect.height / img.height);
+        const w = img.width * scale;
+        const h = img.height * scale;
+        ctx.drawImage(img, (rect.width - w) / 2, (rect.height - h) / 2, w, h);
+      };
+      img.src = foilImageUrl;
+    }
 
     function pos(e: PointerEvent) {
       const r = canvas!.getBoundingClientRect();
@@ -98,11 +116,12 @@ export function ScratchCard({
     canvas.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
     return () => {
+      cancelled = true;
       canvas.removeEventListener("pointerdown", onDown);
       canvas.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
     };
-  }, [foilColor, revealThreshold]);
+  }, [foilColor, foilImageUrl, revealThreshold]);
 
   return (
     <div

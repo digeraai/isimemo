@@ -21,6 +21,7 @@ const SAMPLE: InviteData = {
   envelopeVideoUrl: "/templates/wedding-wax-seal-envelope.mp4",
   heroVideoUrl: "/templates/wedding-wax-seal-hero.mp4",
   quote: "And We created you in pairs.",
+  quoteArabic: "وَخَلَقْنَاكُمْ أَزْوَاجًا",
   quoteAttribution: "Surah An-Naba 78:8",
   timeline: [
     { time: "6:00 pm", title: "Guest Arrival and Welcome Drinks" },

@@ -20,9 +20,13 @@ export interface InviteData {
   heroVideoUrl?: string; // looping video shown in a framed card on the reveal scene, takes precedence over heroImageUrl
   envelopeImageUrl?: string; // illustrated/embossed envelope texture, if provided (falls back to a CSS gradient envelope)
   envelopeVideoUrl?: string; // looping envelope video, takes precedence over envelopeImageUrl
+  frameBackgroundUrl?: string; // illustrated arch/frame behind the formal invitation card, if provided
+  scratchFoilImageUrl?: string; // texture drawn on each scratch-to-reveal date card, if provided (falls back to a plain gold foil)
   quote?: string;
+  quoteArabic?: string; // Arabic-script rendering of the quote, shown above the translation when provided
   quoteAttribution?: string;
   timeline: TimelineItem[];
+  venuePhotoUrl?: string; // venue exterior/interior photo shown above the map, if provided
   dressCode?: string;
   dressCodeColors: string[];
   dressCodeNote?: string;
