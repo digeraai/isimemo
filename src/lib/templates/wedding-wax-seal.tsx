@@ -99,15 +99,26 @@ export function Live({ data }: { data: InviteData }) {
             <div className="w-full max-w-md">
               <button
                 onClick={() => setOpen(true)}
-                className="group relative block w-full aspect-[3/4] rounded-2xl shadow-2xl overflow-hidden focus:outline-none"
+                className={`group relative block w-full rounded-2xl shadow-2xl overflow-hidden focus:outline-none ${
+                  data.envelopeVideoUrl ? "aspect-[480/800]" : "aspect-[3/4]"
+                }`}
                 style={{
-                  background: data.envelopeImageUrl
+                  background: data.envelopeVideoUrl || data.envelopeImageUrl
                     ? undefined
                     : "linear-gradient(160deg, #fdf6f1 0%, #f3e6db 60%, #ecd9c9 100%)",
                 }}
                 aria-label="Tap to open your invitation"
               >
-                {data.envelopeImageUrl ? (
+                {data.envelopeVideoUrl ? (
+                  <video
+                    src={data.envelopeVideoUrl}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                ) : data.envelopeImageUrl ? (
                   <img src={data.envelopeImageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
                 ) : (
                   <>
@@ -132,12 +143,27 @@ export function Live({ data }: { data: InviteData }) {
                     </div>
                   </>
                 )}
-                <div
-                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full flex items-center justify-center shadow-lg"
-                  style={{ background: "radial-gradient(circle at 35% 30%, #9c2c3a, #6c1420)" }}
-                >
-                  <span className={`${script.className} text-blush text-3xl`}>{initials(data.hostNames)}</span>
-                </div>
+                {data.envelopeVideoUrl ? (
+                  // The video's own seal art is used as-is; only the monogram text
+                  // baked into its center is patched over with this couple's real
+                  // initials, in a color-matched scrim so the patch blends in.
+                  <div
+                    className="absolute left-1/2 top-[52%] -translate-x-1/2 -translate-y-1/2 w-[38%] aspect-square rounded-full flex items-center justify-center"
+                    style={{
+                      background:
+                        "radial-gradient(circle at center, rgba(223,214,201,0.99) 0%, rgba(223,214,201,0.97) 78%, rgba(223,214,201,0) 100%)",
+                    }}
+                  >
+                    <span className={`${script.className} text-[#a9853f] text-xl sm:text-2xl`}>{initials(data.hostNames)}</span>
+                  </div>
+                ) : (
+                  <div
+                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full flex items-center justify-center shadow-lg"
+                    style={{ background: "radial-gradient(circle at 35% 30%, #9c2c3a, #6c1420)" }}
+                  >
+                    <span className={`${script.className} text-blush text-3xl`}>{initials(data.hostNames)}</span>
+                  </div>
+                )}
                 <div className="absolute bottom-6 inset-x-0 text-center text-[13px] tracking-widest uppercase text-maroon/70">
                   Tap to open
                 </div>
@@ -147,28 +173,60 @@ export function Live({ data }: { data: InviteData }) {
         ) : (
           <motion.div key="invitation" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
             {/* Hero */}
-            <section className="min-h-screen w-full flex flex-col items-center justify-center text-center px-6 py-20 relative overflow-hidden">
-              {data.heroImageUrl && (
-                <img
-                  src={data.heroImageUrl}
-                  alt=""
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-              )}
-              <div
-                className="absolute inset-0"
-                style={{
-                  background: data.heroImageUrl
-                    ? "linear-gradient(180deg, rgba(122,31,43,0.15) 0%, rgba(251,243,238,0.9) 85%)"
-                    : "linear-gradient(160deg, #fdf6f1 0%, #f3e6db 100%)",
-                }}
-              />
-              <div className="relative">
-                <p className="uppercase tracking-[0.35em] text-xs text-maroon/60 mb-5">You&rsquo;re Invited</p>
-                <h1 className={`${script.className} text-5xl sm:text-6xl text-maroon mb-4`}>{data.hostNames}</h1>
+            {data.heroVideoUrl ? (
+              <section className="w-full flex flex-col items-center justify-center text-center px-6 py-16">
+                <p className="uppercase tracking-[0.35em] text-xs text-maroon/60 mb-6">You&rsquo;re Invited</p>
+                <div className="relative w-full max-w-sm mx-auto aspect-[448/864] rounded-[2rem] overflow-hidden shadow-2xl">
+                  <video
+                    src={data.heroVideoUrl}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                  {/* Scrim patches over the video's own baked-in ceremony text so
+                      this couple's real names show instead. */}
+                  <div
+                    className="absolute left-1/2 top-[3%] -translate-x-1/2 w-[80%] h-[49%] rounded-3xl"
+                    style={{
+                      background:
+                        "radial-gradient(ellipse at center, rgba(221,207,185,1) 0%, rgba(221,207,185,0.99) 86%, rgba(221,207,185,0) 100%)",
+                    }}
+                  />
+                  <div className="absolute left-1/2 top-[3%] -translate-x-1/2 w-[80%] h-[49%] flex flex-col items-center justify-center gap-2 px-2">
+                    <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.22em] text-maroon/70">
+                      Welcome to the wedding of
+                    </p>
+                    <h1 className={`${script.className} text-2xl sm:text-3xl text-maroon leading-tight`}>{data.hostNames}</h1>
+                  </div>
+                </div>
                 <FlourishDivider />
-              </div>
-            </section>
+              </section>
+            ) : (
+              <section className="min-h-screen w-full flex flex-col items-center justify-center text-center px-6 py-20 relative overflow-hidden">
+                {data.heroImageUrl && (
+                  <img
+                    src={data.heroImageUrl}
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                )}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: data.heroImageUrl
+                      ? "linear-gradient(180deg, rgba(122,31,43,0.15) 0%, rgba(251,243,238,0.9) 85%)"
+                      : "linear-gradient(160deg, #fdf6f1 0%, #f3e6db 100%)",
+                  }}
+                />
+                <div className="relative">
+                  <p className="uppercase tracking-[0.35em] text-xs text-maroon/60 mb-5">You&rsquo;re Invited</p>
+                  <h1 className={`${script.className} text-5xl sm:text-6xl text-maroon mb-4`}>{data.hostNames}</h1>
+                  <FlourishDivider />
+                </div>
+              </section>
+            )}
 
             {/* The Date — scratch to reveal */}
             <section className="px-6 py-20 text-center">

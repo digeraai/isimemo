@@ -18,6 +18,8 @@ const SAMPLE: InviteData = {
   guestName: "Thandi Nkosi",
   themeColor: "#7a1f2b",
   rsvpUrl: "#rsvp",
+  envelopeVideoUrl: "/templates/wedding-wax-seal-envelope.mp4",
+  heroVideoUrl: "/templates/wedding-wax-seal-hero.mp4",
   quote: "And We created you in pairs.",
   quoteAttribution: "Surah An-Naba 78:8",
   timeline: [

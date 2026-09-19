@@ -17,7 +17,9 @@ export interface InviteData {
   themeColor: string; // hex
   rsvpUrl: string;
   heroImageUrl?: string; // couple/venue photo shown on the reveal scene, if the host uploaded one
+  heroVideoUrl?: string; // looping video shown in a framed card on the reveal scene, takes precedence over heroImageUrl
   envelopeImageUrl?: string; // illustrated/embossed envelope texture, if provided (falls back to a CSS gradient envelope)
+  envelopeVideoUrl?: string; // looping envelope video, takes precedence over envelopeImageUrl
   quote?: string;
   quoteAttribution?: string;
   timeline: TimelineItem[];
