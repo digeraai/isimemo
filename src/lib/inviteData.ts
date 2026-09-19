@@ -11,6 +11,13 @@ function safeJsonArray<T>(raw: string | null | undefined): T[] {
   }
 }
 
+// Default envelope/hero videos bundled with the wedding-wax-seal template,
+// used until hosts can upload their own (see docs/GENERATION.md follow-up).
+const WEDDING_WAX_SEAL_DEFAULTS = {
+  envelopeVideoUrl: "/templates/wedding-wax-seal-envelope.mp4",
+  heroVideoUrl: "/templates/wedding-wax-seal-hero.mp4",
+};
+
 export function buildInviteData(event: Event, guest: Guest, baseUrl: string): InviteData {
   const dateLabel = event.eventDate.toLocaleDateString("en-ZA", {
     weekday: "long",
@@ -26,6 +33,9 @@ export function buildInviteData(event: Event, guest: Guest, baseUrl: string): In
   const photoUrls = safeJsonArray<string>(event.photoUrls);
   const timeline = safeJsonArray<TimelineItem>(event.timeline);
   const dressCodeColors = safeJsonArray<string>(event.dressCodeColors);
+  const heroImageUrl = photoUrls[0] || undefined;
+
+  const isWeddingWaxSeal = event.templateSlug === "wedding-wax-seal";
 
   return {
     title: event.title,
@@ -39,7 +49,12 @@ export function buildInviteData(event: Event, guest: Guest, baseUrl: string): In
     guestName: guest.name,
     themeColor: event.themeColor,
     rsvpUrl: `${baseUrl}/invite/${guest.token}`,
-    heroImageUrl: photoUrls[0] || undefined,
+    heroImageUrl,
+    // The bundled envelope video is the default look for every wedding-wax-seal
+    // event until per-event asset uploads exist; the hero video only applies
+    // when the host hasn't uploaded their own photo yet.
+    envelopeVideoUrl: isWeddingWaxSeal ? WEDDING_WAX_SEAL_DEFAULTS.envelopeVideoUrl : undefined,
+    heroVideoUrl: isWeddingWaxSeal && !heroImageUrl ? WEDDING_WAX_SEAL_DEFAULTS.heroVideoUrl : undefined,
     quote: event.quote || undefined,
     quoteAttribution: event.quoteAttribution || undefined,
     timeline,
