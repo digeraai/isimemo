@@ -244,86 +244,82 @@ export function Live({ data }: { data: InviteData }) {
           <motion.div
             key="envelope"
             exit={{ opacity: 0, transition: { duration: 0.5 } }}
-            className="min-h-screen w-full flex items-center justify-center p-6"
+            className="w-full min-h-screen"
           >
-            <div className="w-full max-w-md">
-              <button
-                onClick={openEnvelope}
-                className={`group relative block w-full rounded-2xl shadow-2xl overflow-hidden focus:outline-none ${
-                  data.envelopeVideoUrl ? "aspect-[480/800]" : "aspect-[3/4]"
-                }`}
-                style={{
-                  background: data.envelopeVideoUrl || data.envelopeImageUrl
-                    ? undefined
-                    : "linear-gradient(160deg, #fdf6f1 0%, #f3e6db 60%, #ecd9c9 100%)",
-                }}
-                aria-label="Tap to open your invitation"
-              >
-                {data.envelopeVideoUrl ? (
-                  <video
-                    src={data.envelopeVideoUrl}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                ) : data.envelopeImageUrl ? (
-                  <img src={data.envelopeImageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
-                ) : (
-                  <>
-                    <div
-                      className="absolute inset-0 opacity-[0.15]"
-                      style={{
-                        backgroundImage:
-                          "repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(122,31,43,0.4) 40px, rgba(122,31,43,0.4) 41px)",
-                      }}
-                    />
-                    <div className="absolute inset-x-0 top-0 h-1/2 origin-top transition-transform duration-700 group-hover:-translate-y-1">
-                      <div
-                        className="w-full h-full"
-                        style={{ clipPath: "polygon(0 0, 100% 0, 50% 100%)", background: "linear-gradient(200deg,#f6e9dd,#e8d2bd)" }}
-                      />
-                    </div>
-                    <div className="absolute inset-x-0 bottom-0 h-1/2">
-                      <div
-                        className="w-full h-full"
-                        style={{ clipPath: "polygon(0 100%, 100% 100%, 50% 0)", background: "linear-gradient(340deg,#f6e9dd,#e8d2bd)" }}
-                      />
-                    </div>
-                  </>
-                )}
-                {!data.envelopeVideoUrl && (
+            <button
+              onClick={openEnvelope}
+              className="group relative block w-full min-h-screen focus:outline-none"
+              style={{
+                background: data.envelopeVideoUrl || data.envelopeImageUrl
+                  ? undefined
+                  : "linear-gradient(160deg, #fdf6f1 0%, #f3e6db 60%, #ecd9c9 100%)",
+              }}
+              aria-label="Tap to open your invitation"
+            >
+              {data.envelopeVideoUrl ? (
+                <video
+                  src={data.envelopeVideoUrl}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  disablePictureInPicture
+                  controlsList="nodownload nofullscreen noremoteplayback"
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              ) : data.envelopeImageUrl ? (
+                <img src={data.envelopeImageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
+              ) : (
+                <>
                   <div
-                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full flex items-center justify-center shadow-lg"
-                    style={{ background: "radial-gradient(circle at 35% 30%, #9c2c3a, #6c1420)" }}
-                  >
-                    <span className={`${script.className} text-blush text-3xl`}>{initials(data.hostNames)}</span>
+                    className="absolute inset-0 opacity-[0.15]"
+                    style={{
+                      backgroundImage:
+                        "repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(122,31,43,0.4) 40px, rgba(122,31,43,0.4) 41px)",
+                    }}
+                  />
+                  <div className="absolute inset-x-0 top-0 h-1/2 origin-top transition-transform duration-700 group-hover:-translate-y-1">
+                    <div
+                      className="w-full h-full"
+                      style={{ clipPath: "polygon(0 0, 100% 0, 50% 100%)", background: "linear-gradient(200deg,#f6e9dd,#e8d2bd)" }}
+                    />
                   </div>
-                )}
-                <div className="absolute bottom-6 inset-x-0 text-center text-[13px] tracking-widest uppercase text-maroon/70">
-                  Tap to open
+                  <div className="absolute inset-x-0 bottom-0 h-1/2">
+                    <div
+                      className="w-full h-full"
+                      style={{ clipPath: "polygon(0 100%, 100% 100%, 50% 0)", background: "linear-gradient(340deg,#f6e9dd,#e8d2bd)" }}
+                    />
+                  </div>
+                </>
+              )}
+              {!data.envelopeVideoUrl && (
+                <div
+                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full flex items-center justify-center shadow-lg"
+                  style={{ background: "radial-gradient(circle at 35% 30%, #9c2c3a, #6c1420)" }}
+                >
+                  <span className={`${script.className} text-blush text-3xl`}>{initials(data.hostNames)}</span>
                 </div>
-              </button>
-            </div>
+              )}
+              <div className="absolute bottom-6 inset-x-0 text-center text-[13px] tracking-widest uppercase text-maroon/70">
+                Tap to open
+              </div>
+            </button>
           </motion.div>
         ) : (
           <motion.div key="invitation" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
             {/* Hero */}
             {data.heroVideoUrl ? (
-              <section ref={sectionRef} className="w-full flex flex-col items-center justify-center text-center px-6 py-16">
-                <p className="uppercase tracking-[0.35em] text-xs text-maroon/60 mb-6">You&rsquo;re Invited</p>
-                <div className="relative w-full max-w-sm mx-auto aspect-[448/864] rounded-[2rem] overflow-hidden shadow-2xl">
-                  <video
-                    src={data.heroVideoUrl}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                </div>
-                <FlourishDivider />
+              <section ref={sectionRef} className="relative w-full min-h-screen">
+                <video
+                  src={data.heroVideoUrl}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  disablePictureInPicture
+                  controlsList="nodownload nofullscreen noremoteplayback"
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
               </section>
             ) : (
               <section ref={sectionRef} className="min-h-screen w-full flex flex-col items-center justify-center text-center px-6 py-20 relative overflow-hidden">
