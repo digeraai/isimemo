@@ -286,20 +286,7 @@ export function Live({ data }: { data: InviteData }) {
                     </div>
                   </>
                 )}
-                {data.envelopeVideoUrl ? (
-                  // The video's own seal art is used as-is; only the monogram text
-                  // baked into its center is patched over with this couple's real
-                  // initials, in a color-matched scrim so the patch blends in.
-                  <div
-                    className="absolute left-1/2 top-[52%] -translate-x-1/2 -translate-y-1/2 w-[38%] aspect-square rounded-full flex items-center justify-center"
-                    style={{
-                      background:
-                        "radial-gradient(circle at center, rgba(223,214,201,0.99) 0%, rgba(223,214,201,0.97) 78%, rgba(223,214,201,0) 100%)",
-                    }}
-                  >
-                    <span className={`${script.className} text-[#a9853f] text-xl sm:text-2xl`}>{initials(data.hostNames)}</span>
-                  </div>
-                ) : (
+                {!data.envelopeVideoUrl && (
                   <div
                     className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full flex items-center justify-center shadow-lg"
                     style={{ background: "radial-gradient(circle at 35% 30%, #9c2c3a, #6c1420)" }}
