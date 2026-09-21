@@ -315,26 +315,6 @@ export function Live({ data }: { data: InviteData }) {
                     playsInline
                     className="absolute inset-0 w-full h-full object-cover"
                   />
-                  {/* A tight, deliberately-styled plaque — narrow enough to read as
-                      a design element rather than a blank panel — masks the
-                      video's own baked-in ceremony text so this couple's real
-                      names show instead. Still spans the full text block's
-                      height (it has to, to fully hide the baked lines) but is
-                      narrower and carries its own border/shadow so it reads as
-                      intentional. */}
-                  <div
-                    className="absolute left-1/2 top-[4%] -translate-x-1/2 w-[68%] h-[48%] rounded-2xl border shadow-md"
-                    style={{
-                      background: "rgb(221,207,185)",
-                      borderColor: "rgba(169,133,63,0.35)",
-                    }}
-                  />
-                  <div className="absolute left-1/2 top-[4%] -translate-x-1/2 w-[68%] h-[48%] flex flex-col items-center justify-center gap-2 px-2">
-                    <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.22em] text-maroon/70">
-                      Welcome to the wedding of
-                    </p>
-                    <h1 className={`${script.className} text-2xl sm:text-3xl text-maroon leading-tight`}>{data.hostNames}</h1>
-                  </div>
                 </div>
                 <FlourishDivider />
               </section>
