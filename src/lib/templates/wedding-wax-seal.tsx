@@ -21,6 +21,12 @@ const script = Parisienne({ subsets: ["latin"], weight: "400" });
 const serif = Cormorant_Garamond({ subsets: ["latin"], weight: ["400", "500", "600"], style: ["normal", "italic"] });
 const arabic = Amiri({ subsets: ["arabic"], weight: "700" });
 
+// Temporary scope flag: only the envelope (01) and hero (02) assets have
+// been supplied so far, so the invitation stops there for now. Flip this
+// back on (or gate individual sections) once assets 03–11 arrive — none of
+// that code was removed, just gated behind this.
+const SHOW_REST_OF_INVITATION = false;
+
 function initials(hostNames: string) {
   const parts = hostNames.split(/&| and /i).map((p) => p.trim()).filter(Boolean);
   const letters = parts.map((p) => p.charAt(0).toUpperCase());
@@ -132,13 +138,14 @@ export function Live({ data }: { data: InviteData }) {
   // Total number of top-level scroll "stops", computed directly from which
   // optional sections this event actually has data for — see the JSX below
   // for the exact order, which this must match.
-  const totalSections =
-    5 +
-    (data.quote ? 1 : 0) +
-    (data.timeline.length > 0 ? 1 : 0) +
-    (data.venueName || data.venueAddress ? 1 : 0) +
-    (data.dressCode ? 1 : 0) +
-    (data.giftListUrl ? 1 : 0);
+  const totalSections = !SHOW_REST_OF_INVITATION
+    ? 1
+    : 5 +
+      (data.quote ? 1 : 0) +
+      (data.timeline.length > 0 ? 1 : 0) +
+      (data.venueName || data.venueAddress ? 1 : 0) +
+      (data.dressCode ? 1 : 0) +
+      (data.giftListUrl ? 1 : 0);
 
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
   const currentIndexRef = useRef(0);
@@ -321,16 +328,21 @@ export function Live({ data }: { data: InviteData }) {
                     playsInline
                     className="absolute inset-0 w-full h-full object-cover"
                   />
-                  {/* Scrim patches over the video's own baked-in ceremony text so
-                      this couple's real names show instead. */}
+                  {/* A tight, deliberately-styled plaque — narrow enough to read as
+                      a design element rather than a blank panel — masks the
+                      video's own baked-in ceremony text so this couple's real
+                      names show instead. Still spans the full text block's
+                      height (it has to, to fully hide the baked lines) but is
+                      narrower and carries its own border/shadow so it reads as
+                      intentional. */}
                   <div
-                    className="absolute left-1/2 top-[3%] -translate-x-1/2 w-[80%] h-[49%] rounded-3xl"
+                    className="absolute left-1/2 top-[4%] -translate-x-1/2 w-[68%] h-[48%] rounded-2xl border shadow-md"
                     style={{
-                      background:
-                        "radial-gradient(ellipse at center, rgba(221,207,185,1) 0%, rgba(221,207,185,0.99) 86%, rgba(221,207,185,0) 100%)",
+                      background: "rgb(221,207,185)",
+                      borderColor: "rgba(169,133,63,0.35)",
                     }}
                   />
-                  <div className="absolute left-1/2 top-[3%] -translate-x-1/2 w-[80%] h-[49%] flex flex-col items-center justify-center gap-2 px-2">
+                  <div className="absolute left-1/2 top-[4%] -translate-x-1/2 w-[68%] h-[48%] flex flex-col items-center justify-center gap-2 px-2">
                     <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.22em] text-maroon/70">
                       Welcome to the wedding of
                     </p>
@@ -364,6 +376,8 @@ export function Live({ data }: { data: InviteData }) {
               </section>
             )}
 
+            {SHOW_REST_OF_INVITATION && (
+              <>
             {/* The Date — scratch to reveal */}
             <section ref={sectionRef} className="px-6 py-20 text-center">
               <Reveal>
@@ -523,6 +537,8 @@ export function Live({ data }: { data: InviteData }) {
                 </OrnateCard>
               </Reveal>
             </section>
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
