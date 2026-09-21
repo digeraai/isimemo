@@ -351,11 +351,14 @@ export function Live({ data }: { data: InviteData }) {
             )}
 
             {/* Poster sections — a complete numbered asset set (Date, Description,
-                Verse, Timeline, Countdown, Location, Dress Code, Gift, RSVP),
-                shown full-bleed one per scroll stop, in order, exactly as supplied. */}
+                Verse, Timeline, Countdown, Location, Dress Code, Gift, RSVP), one
+                per scroll stop, in order, exactly as supplied. No card chrome
+                (border/shadow/gap) between them — each image carries its own
+                cream background, so stacked flush they read as one continuous
+                scroll rather than a stack of separate cards. */}
             {posterSections.map((src, i) => (
-              <section key={i} ref={sectionRef} className="w-full flex items-center justify-center px-6 py-10">
-                <img src={src} alt="" className="w-full max-w-sm mx-auto rounded-[2rem] shadow-2xl" />
+              <section key={i} ref={sectionRef} className="w-full max-w-sm mx-auto block">
+                <img src={src} alt="" className="w-full block" />
               </section>
             ))}
 
