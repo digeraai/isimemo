@@ -171,6 +171,48 @@ export function Live({ data }: { data: InviteData }) {
     return () => clearTimeout(timer);
   }, [open, paused, tick, totalSections]);
 
+  // Any real scroll/touch/keyboard input means the guest is taking control —
+  // pause autoplay immediately rather than fighting their input.
+  useEffect(() => {
+    if (!open) return;
+    // Ignore input that originates on an interactive control (the play/pause
+    // button itself, links, form fields) — those manage playback state on
+    // their own and shouldn't race with this.
+    function onUserIntent(e: Event) {
+      const target = e.target as HTMLElement | null;
+      if (target?.closest("button, a, input, textarea, iframe")) return;
+      setPaused(true);
+    }
+    window.addEventListener("wheel", onUserIntent, { passive: true });
+    window.addEventListener("touchstart", onUserIntent, { passive: true });
+    window.addEventListener("keydown", onUserIntent);
+    return () => {
+      window.removeEventListener("wheel", onUserIntent);
+      window.removeEventListener("touchstart", onUserIntent);
+      window.removeEventListener("keydown", onUserIntent);
+    };
+  }, [open]);
+
+  // Finds whichever section is currently most in view and points autoplay's
+  // internal position at it, so resuming continues from wherever the guest
+  // actually scrolled to rather than snapping back to wherever autoplay had
+  // last reached.
+  function syncCurrentIndexToScroll() {
+    let idx = 0;
+    for (let i = 0; i < sectionRefs.current.length; i++) {
+      const el = sectionRefs.current[i];
+      if (el && el.getBoundingClientRect().top <= window.innerHeight * 0.4) idx = i;
+    }
+    currentIndexRef.current = idx;
+  }
+
+  function togglePlayback() {
+    setPaused((p) => {
+      if (p) syncCurrentIndexToScroll(); // resuming — pick up from where the guest is
+      return !p;
+    });
+  }
+
   function openEnvelope() {
     currentIndexRef.current = 0;
     autoPausedIndexRef.current = null;
@@ -484,7 +526,7 @@ export function Live({ data }: { data: InviteData }) {
           </motion.div>
         )}
       </AnimatePresence>
-      {open && <PlayPauseButton paused={paused} onToggle={() => setPaused((p) => !p)} />}
+      {open && <PlayPauseButton paused={paused} onToggle={togglePlayback} />}
     </div>
   );
 }
