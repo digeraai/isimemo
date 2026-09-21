@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Amiri, Cormorant_Garamond, Parisienne } from "next/font/google";
 import type { InviteData } from "./types";
@@ -89,15 +89,97 @@ function OrnateCard({
   );
 }
 
+// The floating play/pause control shown once the invitation is open,
+// mirroring the pause button on Instagram/Story-style auto-advancing cards.
+function PlayPauseButton({ paused, onToggle }: { paused: boolean; onToggle: () => void }) {
+  return (
+    <button
+      onClick={onToggle}
+      className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full flex items-center justify-center shadow-lg focus:outline-none"
+      style={{ background: "radial-gradient(circle at 35% 30%, #d4b06a, #a9853f)" }}
+      aria-label={paused ? "Resume" : "Pause"}
+    >
+      {paused ? (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="white">
+          <path d="M3 2 L14 8 L3 14 Z" />
+        </svg>
+      ) : (
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="white">
+          <rect x="3" y="2" width="3.5" height="12" rx="1" />
+          <rect x="9.5" y="2" width="3.5" height="12" rx="1" />
+        </svg>
+      )}
+    </button>
+  );
+}
+
 // ---------------------------------------------------------------- Live -----
 // Interactive version shown at /invite/[token]. A tap-to-open envelope gates
 // a full scrolling invitation: hero, scratch-to-reveal date, formal wording +
 // optional quote, timeline, live countdown, location + map, dress code, gift
-// preferences, and (appended by the page) the RSVP form.
+// preferences, and (appended by the page) the RSVP form. Once open, the page
+// auto-advances section to section (a hands-off, Story-like read), pausing
+// automatically at the scratch-to-reveal date so the guest can interact, and
+// stopping for good once it reaches the RSVP lead-in. A floating button lets
+// the guest pause/resume at any point.
 export function Live({ data }: { data: InviteData }) {
   const [open, setOpen] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const [tick, setTick] = useState(0);
   const { day, month, year } = dateParts(data.eventDateISO);
   const mapQuery = data.venueAddress || data.venueName;
+
+  // Total number of top-level scroll "stops", computed directly from which
+  // optional sections this event actually has data for — see the JSX below
+  // for the exact order, which this must match.
+  const totalSections =
+    5 +
+    (data.quote ? 1 : 0) +
+    (data.timeline.length > 0 ? 1 : 0) +
+    (data.venueName || data.venueAddress ? 1 : 0) +
+    (data.dressCode ? 1 : 0) +
+    (data.giftListUrl ? 1 : 0);
+
+  const sectionRefs = useRef<(HTMLElement | null)[]>([]);
+  const currentIndexRef = useRef(0);
+  const autoPausedIndexRef = useRef<number | null>(null);
+  let sectionCounter = 0;
+  const sectionRef = (el: HTMLElement | null) => {
+    sectionRefs.current[sectionCounter] = el;
+    sectionCounter += 1;
+  };
+
+  useEffect(() => {
+    if (!open || paused) return;
+    const idx = currentIndexRef.current;
+    if (idx >= totalSections - 1) return; // reached the RSVP lead-in — autoplay stops here
+
+    const isScratchSection = idx === 1; // Date is always the second stop
+    if (isScratchSection && autoPausedIndexRef.current !== idx) {
+      autoPausedIndexRef.current = idx;
+      setPaused(true);
+      return;
+    }
+
+    const duration = idx === 0 ? 4500 : 3800;
+    const timer = setTimeout(() => {
+      const nextIdx = idx + 1;
+      sectionRefs.current[nextIdx]?.scrollIntoView({ behavior: "smooth", block: "start" });
+      currentIndexRef.current = nextIdx;
+      setTick((t) => t + 1);
+    }, duration);
+    return () => clearTimeout(timer);
+  }, [open, paused, tick, totalSections]);
+
+  function openEnvelope() {
+    currentIndexRef.current = 0;
+    autoPausedIndexRef.current = null;
+    setTick(0);
+    const reduceMotion =
+      typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setPaused(reduceMotion);
+    setOpen(true);
+  }
 
   return (
     <div className={`w-full bg-[#fbf3ee] ${serif.className}`}>
@@ -110,7 +192,7 @@ export function Live({ data }: { data: InviteData }) {
           >
             <div className="w-full max-w-md">
               <button
-                onClick={() => setOpen(true)}
+                onClick={openEnvelope}
                 className={`group relative block w-full rounded-2xl shadow-2xl overflow-hidden focus:outline-none ${
                   data.envelopeVideoUrl ? "aspect-[480/800]" : "aspect-[3/4]"
                 }`}
@@ -186,7 +268,7 @@ export function Live({ data }: { data: InviteData }) {
           <motion.div key="invitation" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
             {/* Hero */}
             {data.heroVideoUrl ? (
-              <section className="w-full flex flex-col items-center justify-center text-center px-6 py-16">
+              <section ref={sectionRef} className="w-full flex flex-col items-center justify-center text-center px-6 py-16">
                 <p className="uppercase tracking-[0.35em] text-xs text-maroon/60 mb-6">You&rsquo;re Invited</p>
                 <div className="relative w-full max-w-sm mx-auto aspect-[448/864] rounded-[2rem] overflow-hidden shadow-2xl">
                   <video
@@ -216,7 +298,7 @@ export function Live({ data }: { data: InviteData }) {
                 <FlourishDivider />
               </section>
             ) : (
-              <section className="min-h-screen w-full flex flex-col items-center justify-center text-center px-6 py-20 relative overflow-hidden">
+              <section ref={sectionRef} className="min-h-screen w-full flex flex-col items-center justify-center text-center px-6 py-20 relative overflow-hidden">
                 {data.heroImageUrl && (
                   <img
                     src={data.heroImageUrl}
@@ -241,7 +323,7 @@ export function Live({ data }: { data: InviteData }) {
             )}
 
             {/* The Date — scratch to reveal */}
-            <section className="px-6 py-20 text-center">
+            <section ref={sectionRef} className="px-6 py-20 text-center">
               <Reveal>
                 <p className={`${script.className} text-3xl text-maroon mb-1`}>The Date</p>
                 <p className="text-[11px] uppercase tracking-widest text-maroon/50 mb-8">✦ Scratch to reveal the date ✦</p>
@@ -254,7 +336,7 @@ export function Live({ data }: { data: InviteData }) {
             </section>
 
             {/* Formal invitation text */}
-            <section className="px-6 py-20 text-center bg-white/40">
+            <section ref={sectionRef} className="px-6 py-20 text-center bg-white/40">
               <Reveal className="max-w-md mx-auto">
                 <OrnateCard backgroundUrl={data.frameBackgroundUrl}>
                   <p className="text-[11px] uppercase tracking-widest text-maroon/50 mb-6">You are invited to the wedding of</p>
@@ -268,7 +350,7 @@ export function Live({ data }: { data: InviteData }) {
 
             {/* Quote */}
             {data.quote && (
-              <section className="px-6 py-16 text-center">
+              <section ref={sectionRef} className="px-6 py-16 text-center">
                 <Reveal className="max-w-sm mx-auto">
                   <FlourishDivider />
                   {data.quoteArabic && (
@@ -286,7 +368,7 @@ export function Live({ data }: { data: InviteData }) {
 
             {/* Timeline */}
             {data.timeline.length > 0 && (
-              <section className="px-6 py-20 text-center bg-white/40">
+              <section ref={sectionRef} className="px-6 py-20 text-center bg-white/40">
                 <Reveal>
                   <p className={`${script.className} text-3xl text-maroon mb-10`}>Wedding Timeline</p>
                   <div className="max-w-xs mx-auto relative">
@@ -314,7 +396,7 @@ export function Live({ data }: { data: InviteData }) {
             )}
 
             {/* Countdown */}
-            <section className="px-6 py-20 text-center">
+            <section ref={sectionRef} className="px-6 py-20 text-center">
               <Reveal>
                 <p className={`${script.className} text-3xl text-maroon mb-8`}>The Celebration Begins</p>
                 <Countdown targetISO={data.eventDateISO} textColor="#7a1f2b" />
@@ -323,7 +405,7 @@ export function Live({ data }: { data: InviteData }) {
 
             {/* Location */}
             {(data.venueName || data.venueAddress) && (
-              <section className="px-6 py-20 text-center bg-white/40">
+              <section ref={sectionRef} className="px-6 py-20 text-center bg-white/40">
                 <Reveal className="max-w-sm mx-auto">
                   <p className={`${script.className} text-3xl text-maroon mb-2`}>Location</p>
                   {data.venueName && <p className="text-lg text-maroon mb-1">{data.venueName}</p>}
@@ -348,7 +430,7 @@ export function Live({ data }: { data: InviteData }) {
 
             {/* Dress code */}
             {data.dressCode && (
-              <section className="px-6 py-20 text-center">
+              <section ref={sectionRef} className="px-6 py-20 text-center">
                 <Reveal className="max-w-sm mx-auto">
                   <p className={`${script.className} text-3xl text-maroon mb-6`}>Dress Code</p>
                   {data.dressCodeImageUrl && (
@@ -369,7 +451,7 @@ export function Live({ data }: { data: InviteData }) {
 
             {/* Gift preferences */}
             {data.giftListUrl && (
-              <section className="px-6 py-16 text-center bg-white/40">
+              <section ref={sectionRef} className="px-6 py-16 text-center bg-white/40">
                 <Reveal className="max-w-sm mx-auto">
                   <OrnateCard>
                     <p className={`${script.className} text-3xl text-maroon mb-4`}>Gift Preferences</p>
@@ -391,7 +473,7 @@ export function Live({ data }: { data: InviteData }) {
             )}
 
             {/* RSVP lead-in — the form itself is appended by the page below */}
-            <section className="px-6 pt-20 text-center">
+            <section ref={sectionRef} className="px-6 pt-20 text-center">
               <Reveal className="max-w-sm mx-auto">
                 <OrnateCard>
                   <p className={`${script.className} text-3xl text-maroon mb-3`}>Confirm Your Attendance</p>
@@ -402,6 +484,7 @@ export function Live({ data }: { data: InviteData }) {
           </motion.div>
         )}
       </AnimatePresence>
+      {open && <PlayPauseButton paused={paused} onToggle={() => setPaused((p) => !p)} />}
     </div>
   );
 }
