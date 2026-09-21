@@ -1,6 +1,18 @@
 import Link from "next/link";
+import { Fraunces, Work_Sans } from "next/font/google";
 import { TEMPLATE_LIST } from "@/lib/templates";
 import { TIERS } from "@/lib/tiers";
+
+// Editorial grid system, kept local to the marketing homepage (rather than
+// the site-wide Tailwind `font-serif` token) so the app's own pages —
+// templates, manage, invite — are unaffected.
+const display = Fraunces({ subsets: ["latin"], weight: ["500", "600"], style: ["normal", "italic"] });
+const sans = Work_Sans({ subsets: ["latin"], weight: ["400", "500", "600"] });
+
+const BG = "#FAF6EE";
+const INK = "#2E2A22";
+const ACCENT = "#BE6A46";
+const LINE = "#DED0B4";
 
 const FAQS = [
   {
@@ -21,165 +33,187 @@ const FAQS = [
   },
 ];
 
+const Eyebrow = ({ children, color = INK }: { children: React.ReactNode; color?: string }) => (
+  <p className="text-[11px] tracking-[3px] uppercase" style={{ color }}>
+    {children}
+  </p>
+);
+
 export default function Home() {
   return (
-    <main>
-      <header className="sticky top-0 z-10 bg-[#f8f6f3]/90 backdrop-blur border-b border-black/5">
-        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          <span className="font-serif text-lg text-[#1c1c2e]">isiMemo</span>
-          <nav className="hidden sm:flex items-center gap-8 text-sm text-[#1c1c2e]/70">
-            <a href="#how-it-works" className="hover:text-[#1c1c2e] transition">
-              How it works
-            </a>
-            <a href="#templates" className="hover:text-[#1c1c2e] transition">
+    <main className={sans.className} style={{ background: BG, color: INK }}>
+      {/* ---------------------------------------------------------------- Hero */}
+      <div className="md:min-h-[92vh] md:flex" style={{ borderBottom: `1px solid ${LINE}` }}>
+        {/* Nav column */}
+        <div
+          className="md:flex-[0.7] flex md:flex-col items-center md:items-stretch justify-between px-6 py-6 md:p-12"
+          style={{ borderBottom: `1px solid ${LINE}` }}
+        >
+          <p className="text-xs tracking-[3px] uppercase">isiMemo</p>
+          <nav className="hidden md:flex flex-col gap-[18px] text-[11px] tracking-[2px] uppercase opacity-70">
+            <a href="#templates" className="hover:opacity-100 transition">
               Templates
             </a>
-            <a href="#pricing" className="hover:text-[#1c1c2e] transition">
+            <a href="#pricing" className="hover:opacity-100 transition">
               Pricing
             </a>
-            <a href="#faq" className="hover:text-[#1c1c2e] transition">
+            <a href="#faq" className="hover:opacity-100 transition">
               FAQ
             </a>
           </nav>
           <Link
             href="/templates"
-            className="bg-[#1c1c2e] text-white px-5 py-2.5 rounded-full text-sm tracking-wide hover:opacity-90 transition"
+            className="md:hidden text-[11px] tracking-[2px] uppercase border-b pb-0.5"
+            style={{ borderColor: INK }}
           >
-            Get started
+            Start
           </Link>
         </div>
-      </header>
 
-      <section className="max-w-5xl mx-auto px-6 pt-20 pb-16 text-center">
-        <p className="uppercase tracking-[0.3em] text-xs text-maroon/60 mb-5">Digera presents</p>
-        <h1 className="font-serif text-5xl md:text-6xl text-[#1c1c2e] mb-6">
-          One invitation, personalized for every guest
-        </h1>
-        <p className="text-lg text-[#1c1c2e]/70 max-w-2xl mx-auto mb-10">
-          Pick a template, add your guest list, and isiMemo generates a personalized invitation and RSVP
-          link for every single guest — automatically. One price per event, up to 500 guests.
-        </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        {/* Headline column */}
+        <div
+          className="md:flex-[2.2] flex flex-col justify-center px-6 py-14 md:p-12 md:border-l"
+          style={{ borderBottom: `1px solid ${LINE}`, borderLeftColor: LINE }}
+        >
+          <Eyebrow color={ACCENT}>The Invite — 01</Eyebrow>
+          <h1
+            className={`${display.className} mt-5 text-[44px] sm:text-[64px] md:text-[76px] leading-[1.05] tracking-[-1px]`}
+          >
+            Set out with care.
+          </h1>
+          <p className="mt-7 text-[15px] leading-[1.7] opacity-65 max-w-[460px]">
+            A single, considered page — envelope, story, timeline, and RSVP — set out with the same care
+            as your invitation. Pick a collection, add your guest list, and isiMemo personalizes every
+            single link.
+          </p>
           <Link
             href="/templates"
-            className="inline-block bg-[#1c1c2e] text-white px-8 py-4 rounded-full text-sm tracking-wide hover:opacity-90 transition"
+            className="mt-9 w-fit pb-1.5 border-b text-[13px] tracking-[1.5px] uppercase"
+            style={{ borderColor: INK }}
           >
-            Browse templates &amp; start your invitation
+            Start your invite
           </Link>
-          <a
-            href="#how-it-works"
-            className="inline-block text-sm text-[#1c1c2e]/60 hover:text-[#1c1c2e] transition"
-          >
-            See how it works ↓
-          </a>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 max-w-lg mx-auto mt-16 text-center">
-          <div>
-            <p className="font-serif text-2xl text-[#1c1c2e]">500</p>
-            <p className="text-xs text-[#1c1c2e]/50 mt-1">guests per event</p>
-          </div>
-          <div>
-            <p className="font-serif text-2xl text-[#1c1c2e]">1</p>
-            <p className="text-xs text-[#1c1c2e]/50 mt-1">flat price, no subscription</p>
-          </div>
-          <div>
-            <p className="font-serif text-2xl text-[#1c1c2e]">3</p>
-            <p className="text-xs text-[#1c1c2e]/50 mt-1">designer templates</p>
-          </div>
-        </div>
-      </section>
-
-      <section id="how-it-works" className="max-w-5xl mx-auto px-6 pb-16 scroll-mt-16">
-        <h2 className="font-serif text-2xl text-center mb-8">How it works</h2>
-        <div className="grid md:grid-cols-3 gap-6">
-          {[
-            { step: "1", title: "Choose a template", body: "Pick a design that fits your event." },
-            { step: "2", title: "Add your guest list", body: "Upload a CSV or type names in — up to 500." },
-            {
-              step: "3",
-              title: "Get personalized invites",
-              body: "Every guest gets their own link, QR code, and downloadable card.",
-            },
-          ].map((s) => (
-            <div key={s.step} className="bg-white rounded-2xl p-6 shadow-sm border border-black/5">
-              <div className="w-9 h-9 rounded-full bg-[#1c1c2e] text-white flex items-center justify-center text-sm mb-4">
-                {s.step}
-              </div>
-              <h3 className="font-semibold mb-2">{s.title}</h3>
-              <p className="text-sm text-[#1c1c2e]/60">{s.body}</p>
+        {/* Stats column */}
+        <div className="md:flex-[1] flex flex-col px-6 py-12 md:p-12 md:border-l" style={{ borderLeftColor: LINE }}>
+          <div className="grid grid-cols-3 md:grid-cols-1 gap-6 md:gap-0">
+            <div className="pt-3 md:mb-10" style={{ borderTop: `1px solid ${LINE}` }}>
+              <div className={`${display.className} text-2xl md:text-3xl`}>{TEMPLATE_LIST.length}</div>
+              <div className="text-[11px] tracking-[1.5px] uppercase opacity-60 mt-1">Collections</div>
             </div>
-          ))}
+            <div className="pt-3 md:mb-10" style={{ borderTop: `1px solid ${LINE}` }}>
+              <div className={`${display.className} text-2xl md:text-3xl`}>500</div>
+              <div className="text-[11px] tracking-[1.5px] uppercase opacity-60 mt-1">Guests, one price</div>
+            </div>
+            <div className="pt-3" style={{ borderTop: `1px solid ${LINE}` }}>
+              <div className={`${display.className} text-2xl md:text-3xl`}>10 min</div>
+              <div className="text-[11px] tracking-[1.5px] uppercase opacity-60 mt-1">To publish</div>
+            </div>
+          </div>
+          <div className="hidden md:block flex-grow" />
+          <div
+            className="hidden md:block text-[11px] tracking-[1.5px] uppercase opacity-50 pt-3.5 mt-10 leading-[2]"
+            style={{ borderTop: `1px solid ${LINE}` }}
+          >
+            {TEMPLATE_LIST.map((t) => t.name).join(" · ")}
+          </div>
         </div>
-      </section>
+      </div>
 
-      <section id="templates" className="max-w-5xl mx-auto px-6 pb-16 scroll-mt-16">
-        <h2 className="font-serif text-2xl text-center mb-8">Templates</h2>
-        <div className="grid sm:grid-cols-3 gap-6">
-          {TEMPLATE_LIST.map((t) => (
+      {/* ------------------------------------------------------------ Templates */}
+      <section id="templates" className="px-6 md:px-12 py-20 md:py-28 scroll-mt-16">
+        <Eyebrow color={ACCENT}>The Invite — 02</Eyebrow>
+        <h2 className={`${display.className} mt-4 text-3xl md:text-5xl tracking-[-0.5px] max-w-xl`}>
+          Five collections, one price each.
+        </h2>
+        <div className="mt-14">
+          {TEMPLATE_LIST.map((t, i) => (
             <Link
               key={t.slug}
-              href={`/templates`}
-              className="rounded-2xl overflow-hidden bg-white shadow-sm border border-black/5 hover:shadow-md transition"
+              href="/templates"
+              className="group flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-8 py-7"
+              style={{ borderTop: `1px solid ${LINE}` }}
             >
-              <div className="h-28" style={{ background: t.swatch }} />
-              <div className="p-5">
-                <p className="text-xs uppercase tracking-wide text-[#1c1c2e]/40 mb-1">{t.category}</p>
-                <h3 className="font-semibold mb-1">{t.name}</h3>
-                <p className="text-sm text-[#1c1c2e]/60">{t.description}</p>
-              </div>
+              <span className="text-[11px] tracking-[1.5px] uppercase opacity-40 sm:w-10 shrink-0">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <span
+                className="w-8 h-8 rounded-full shrink-0 hidden sm:block"
+                style={{ background: t.swatch }}
+              />
+              <span className={`${display.className} text-2xl sm:text-3xl sm:w-64 shrink-0`}>{t.name}</span>
+              <span className="text-sm opacity-60 sm:flex-1">{t.description}</span>
+              <span
+                className="text-[11px] tracking-[1.5px] uppercase shrink-0 opacity-0 group-hover:opacity-100 transition"
+                style={{ color: ACCENT }}
+              >
+                Use this →
+              </span>
             </Link>
           ))}
+          <div style={{ borderTop: `1px solid ${LINE}` }} />
         </div>
       </section>
 
-      <section id="pricing" className="max-w-5xl mx-auto px-6 pb-24 scroll-mt-16">
-        <h2 className="font-serif text-2xl text-center mb-8">Pricing</h2>
-        <div className="grid sm:grid-cols-5 gap-4">
+      {/* -------------------------------------------------------------- Pricing */}
+      <section id="pricing" className="px-6 md:px-12 py-20 md:py-28 scroll-mt-16" style={{ background: "#F6F1E6" }}>
+        <Eyebrow color={ACCENT}>The Invite — 03</Eyebrow>
+        <h2 className={`${display.className} mt-4 text-3xl md:text-5xl tracking-[-0.5px] max-w-xl`}>
+          One flat price, by guest count.
+        </h2>
+        <div className="mt-14 grid grid-cols-2 sm:grid-cols-5 gap-x-6 gap-y-10">
           {TIERS.map((t) => (
-            <div key={t.id} className="bg-white rounded-2xl p-5 border border-black/5 text-center">
-              <p className="text-sm text-[#1c1c2e]/50 mb-1">Up to {t.maxGuests}</p>
-              <p className="font-semibold mb-1">{t.label}</p>
-              <p className="text-2xl font-serif mb-2">R{t.priceZAR}</p>
-              <p className="text-xs text-[#1c1c2e]/50">{t.blurb}</p>
+            <div key={t.id} className="pt-3.5" style={{ borderTop: `1px solid ${LINE}` }}>
+              <p className="text-[11px] tracking-[1.5px] uppercase opacity-50 mb-2">Up to {t.maxGuests}</p>
+              <p className={`${display.className} text-3xl`}>R{t.priceZAR}</p>
+              <p className="text-[11px] tracking-[1.5px] uppercase opacity-60 mt-2">{t.label}</p>
+              <p className="text-xs opacity-50 mt-3 leading-relaxed">{t.blurb}</p>
             </div>
           ))}
         </div>
-        <p className="text-center text-xs text-[#1c1c2e]/40 mt-6">
-          One-time payment per event. No subscriptions, no per-guest surprises.
-        </p>
+        <p className="text-xs opacity-45 mt-14">One-time payment per event. No subscriptions, no per-guest surprises.</p>
       </section>
 
-      <section id="faq" className="max-w-3xl mx-auto px-6 pb-24 scroll-mt-16">
-        <h2 className="font-serif text-2xl text-center mb-8">Frequently asked questions</h2>
-        <div className="space-y-4">
+      {/* ------------------------------------------------------------------ FAQ */}
+      <section id="faq" className="px-6 md:px-12 py-20 md:py-28 scroll-mt-16">
+        <Eyebrow color={ACCENT}>The Invite — 04</Eyebrow>
+        <h2 className={`${display.className} mt-4 text-3xl md:text-5xl tracking-[-0.5px] max-w-xl`}>
+          Questions, answered.
+        </h2>
+        <div className="mt-14 grid sm:grid-cols-2 gap-x-10">
           {FAQS.map((f) => (
-            <div key={f.q} className="bg-white rounded-2xl p-6 border border-black/5">
-              <h3 className="font-semibold mb-2">{f.q}</h3>
-              <p className="text-sm text-[#1c1c2e]/60">{f.a}</p>
+            <div key={f.q} className="py-7" style={{ borderTop: `1px solid ${LINE}` }}>
+              <h3 className="text-[13px] tracking-[0.5px] uppercase font-medium mb-2.5">{f.q}</h3>
+              <p className="text-sm opacity-60 leading-relaxed">{f.a}</p>
             </div>
           ))}
+          <div className="sm:col-span-2" style={{ borderTop: `1px solid ${LINE}` }} />
         </div>
       </section>
 
-      <section className="max-w-3xl mx-auto px-6 pb-24 text-center">
-        <h2 className="font-serif text-3xl mb-4">Ready to send something memorable?</h2>
-        <p className="text-[#1c1c2e]/60 mb-8">
+      {/* ------------------------------------------------------------------- CTA */}
+      <section className="px-6 md:px-12 py-24 md:py-32 text-center" style={{ background: INK, color: BG }}>
+        <p className="text-[11px] tracking-[3px] uppercase opacity-60">The Invite — 05</p>
+        <h2 className={`${display.className} mt-5 text-4xl md:text-6xl tracking-[-1px]`}>
+          Ready to send something memorable?
+        </h2>
+        <p className="mt-6 text-sm opacity-60 max-w-md mx-auto">
           Start free — you only pay once your guest list is ready to send.
         </p>
         <Link
           href="/templates"
-          className="inline-block bg-[#1c1c2e] text-white px-8 py-4 rounded-full text-sm tracking-wide hover:opacity-90 transition"
+          className="mt-10 inline-block pb-1.5 border-b text-[13px] tracking-[1.5px] uppercase"
+          style={{ borderColor: BG }}
         >
-          Browse templates &amp; start your invitation
+          Start your invite
         </Link>
       </section>
 
-      <footer className="border-t border-black/5 py-10">
-        <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="font-serif text-[#1c1c2e]">isiMemo</span>
-          <p className="text-xs text-[#1c1c2e]/40">A Digera product · © {new Date().getFullYear()}</p>
-        </div>
+      {/* --------------------------------------------------------------- Footer */}
+      <footer className="px-6 md:px-12 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <span className="text-xs tracking-[3px] uppercase">isiMemo</span>
+        <p className="text-[11px] tracking-[1px] uppercase opacity-45">A Digera product · © {new Date().getFullYear()}</p>
       </footer>
     </main>
   );
