@@ -43,10 +43,10 @@ export default function Home() {
   return (
     <main className={sans.className} style={{ background: BG, color: INK }}>
       {/* ---------------------------------------------------------------- Hero */}
-      <div className="md:min-h-[92vh] md:flex" style={{ borderBottom: `1px solid ${LINE}` }}>
-        {/* Nav column */}
+      <div className="md:h-[900px] md:flex" style={{ borderBottom: `1px solid ${LINE}` }}>
+        {/* Nav column — flex: 0.7, padding: 48px 28px, border-left: none */}
         <div
-          className="md:flex-[0.7] flex md:flex-col items-center md:items-stretch justify-between px-6 py-6 md:p-12"
+          className="md:flex-[0.7] flex md:flex-col items-center md:items-stretch justify-between px-6 py-6 md:py-12 md:pl-7 md:pr-7"
           style={{ borderBottom: `1px solid ${LINE}` }}
         >
           <p className="text-xs tracking-[3px] uppercase">isiMemo</p>
@@ -70,50 +70,54 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* Headline column */}
+        {/* Headline column — flex: 2.2, padding: 48px, border-left: 1px */}
         <div
           className="md:flex-[2.2] flex flex-col justify-center px-6 py-14 md:p-12 md:border-l"
           style={{ borderBottom: `1px solid ${LINE}`, borderLeftColor: LINE }}
         >
-          <Eyebrow color={ACCENT}>The Invite — 01</Eyebrow>
+          <p className="text-xs tracking-[3px] uppercase mb-5" style={{ color: ACCENT }}>
+            The Invite — 01
+          </p>
           <h1
-            className={`${display.className} mt-5 text-[44px] sm:text-[64px] md:text-[76px] leading-[1.05] tracking-[-1px]`}
+            className={`${display.className} text-[44px] sm:text-[64px] md:text-[84px] leading-[1.05] tracking-[-1px]`}
           >
             Set out with care.
           </h1>
-          <p className="mt-7 text-[15px] leading-[1.7] opacity-65 max-w-[460px]">
+          <p className="mt-[30px] text-[15px] leading-[1.7] opacity-65 max-w-[460px]">
             A single, considered page — envelope, story, timeline, and RSVP — set out with the same care
-            as your invitation. Pick a collection, add your guest list, and isiMemo personalizes every
-            single link.
+            as your invitation.
           </p>
           <Link
             href="/templates"
-            className="mt-9 w-fit pb-1.5 border-b text-[13px] tracking-[1.5px] uppercase"
+            className="mt-9 w-fit pb-[5px] border-b cursor-pointer"
             style={{ borderColor: INK }}
           >
-            Start your invite
+            <span className="text-[13px] tracking-[1.5px] uppercase">Start your invite</span>
           </Link>
         </div>
 
-        {/* Stats column */}
-        <div className="md:flex-[1] flex flex-col px-6 py-12 md:p-12 md:border-l" style={{ borderLeftColor: LINE }}>
+        {/* Stats column — flex: 1, padding: 48px 32px 48px 28px, border-left: 1px */}
+        <div
+          className="md:flex-[1] flex flex-col px-6 py-12 md:pt-12 md:pb-12 md:pl-7 md:pr-8 md:border-l"
+          style={{ borderLeftColor: LINE }}
+        >
           <div className="grid grid-cols-3 md:grid-cols-1 gap-6 md:gap-0">
-            <div className="pt-3 md:mb-10" style={{ borderTop: `1px solid ${LINE}` }}>
-              <div className={`${display.className} text-2xl md:text-3xl`}>{TEMPLATE_LIST.length}</div>
+            <div className="pt-[14px] md:mb-10" style={{ borderTop: `1px solid ${LINE}` }}>
+              <div className={`${display.className} text-2xl md:text-[30px]`}>{TEMPLATE_LIST.length}</div>
               <div className="text-[11px] tracking-[1.5px] uppercase opacity-60 mt-1">Collections</div>
             </div>
-            <div className="pt-3 md:mb-10" style={{ borderTop: `1px solid ${LINE}` }}>
-              <div className={`${display.className} text-2xl md:text-3xl`}>500</div>
+            <div className="pt-[14px] md:mb-10" style={{ borderTop: `1px solid ${LINE}` }}>
+              <div className={`${display.className} text-2xl md:text-[30px]`}>500</div>
               <div className="text-[11px] tracking-[1.5px] uppercase opacity-60 mt-1">Guests, one price</div>
             </div>
-            <div className="pt-3" style={{ borderTop: `1px solid ${LINE}` }}>
-              <div className={`${display.className} text-2xl md:text-3xl`}>10 min</div>
+            <div className="pt-[14px]" style={{ borderTop: `1px solid ${LINE}` }}>
+              <div className={`${display.className} text-2xl md:text-[30px]`}>10 min</div>
               <div className="text-[11px] tracking-[1.5px] uppercase opacity-60 mt-1">To publish</div>
             </div>
           </div>
           <div className="hidden md:block flex-grow" />
           <div
-            className="hidden md:block text-[11px] tracking-[1.5px] uppercase opacity-50 pt-3.5 mt-10 leading-[2]"
+            className="hidden md:block text-[11px] tracking-[1.5px] uppercase opacity-50 pt-[14px] leading-[2]"
             style={{ borderTop: `1px solid ${LINE}` }}
           >
             {TEMPLATE_LIST.map((t) => t.name).join(" · ")}
