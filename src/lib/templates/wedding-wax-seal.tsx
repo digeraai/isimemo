@@ -135,17 +135,22 @@ export function Live({ data }: { data: InviteData }) {
   const { day, month, year } = dateParts(data.eventDateISO);
   const mapQuery = data.venueAddress || data.venueName;
 
+  const posterSections = data.posterSections ?? [];
+
   // Total number of top-level scroll "stops", computed directly from which
   // optional sections this event actually has data for — see the JSX below
   // for the exact order, which this must match.
-  const totalSections = !SHOW_REST_OF_INVITATION
-    ? 1
-    : 5 +
-      (data.quote ? 1 : 0) +
-      (data.timeline.length > 0 ? 1 : 0) +
-      (data.venueName || data.venueAddress ? 1 : 0) +
-      (data.dressCode ? 1 : 0) +
-      (data.giftListUrl ? 1 : 0);
+  const totalSections =
+    posterSections.length > 0
+      ? 1 + posterSections.length // Hero + one stop per poster image
+      : !SHOW_REST_OF_INVITATION
+        ? 1
+        : 5 +
+          (data.quote ? 1 : 0) +
+          (data.timeline.length > 0 ? 1 : 0) +
+          (data.venueName || data.venueAddress ? 1 : 0) +
+          (data.dressCode ? 1 : 0) +
+          (data.giftListUrl ? 1 : 0);
 
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
   const currentIndexRef = useRef(0);
@@ -161,7 +166,9 @@ export function Live({ data }: { data: InviteData }) {
     const idx = currentIndexRef.current;
     if (idx >= totalSections - 1) return; // reached the RSVP lead-in — autoplay stops here
 
-    const isScratchSection = idx === 1; // Date is always the second stop
+    // The interactive scratch-to-reveal date only exists in the dynamic
+    // (non-poster) layout — poster images are static, nothing to pause for.
+    const isScratchSection = posterSections.length === 0 && idx === 1;
     if (isScratchSection && autoPausedIndexRef.current !== idx) {
       autoPausedIndexRef.current = idx;
       setPaused(true);
@@ -342,6 +349,15 @@ export function Live({ data }: { data: InviteData }) {
                 </div>
               </section>
             )}
+
+            {/* Poster sections — a complete numbered asset set (Date, Description,
+                Verse, Timeline, Countdown, Location, Dress Code, Gift, RSVP),
+                shown full-bleed one per scroll stop, in order, exactly as supplied. */}
+            {posterSections.map((src, i) => (
+              <section key={i} ref={sectionRef} className="w-full flex items-center justify-center px-6 py-10">
+                <img src={src} alt="" className="w-full max-w-sm mx-auto rounded-[2rem] shadow-2xl" />
+              </section>
+            ))}
 
             {SHOW_REST_OF_INVITATION && (
               <>

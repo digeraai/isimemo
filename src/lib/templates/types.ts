@@ -32,6 +32,11 @@ export interface InviteData {
   dressCodeNote?: string;
   dressCodeImageUrl?: string; // illustrated outfit figures, if provided
   giftListUrl?: string;
+  // Ordered full-bleed poster images shown one per scroll stop after the
+  // hero (Date, Description, Verse, Timeline, Countdown, Location, Dress
+  // Code, Gift, RSVP) — used when the host supplies a complete numbered
+  // asset set rather than the dynamic per-field components below.
+  posterSections?: string[];
 }
 
 export interface TemplateMeta {

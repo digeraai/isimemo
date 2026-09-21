@@ -16,6 +16,17 @@ function safeJsonArray<T>(raw: string | null | undefined): T[] {
 const WEDDING_WAX_SEAL_DEFAULTS = {
   envelopeVideoUrl: "/templates/wedding-wax-seal-envelope.mp4",
   heroVideoUrl: "/templates/wedding-wax-seal-hero.mp4",
+  posterSections: [
+    "/templates/wedding-wax-seal-03-date.png",
+    "/templates/wedding-wax-seal-04-description.png",
+    "/templates/wedding-wax-seal-05-verse.png",
+    "/templates/wedding-wax-seal-06-timeline.png",
+    "/templates/wedding-wax-seal-07-countdown.png",
+    "/templates/wedding-wax-seal-08-location.png",
+    "/templates/wedding-wax-seal-09-dresscode.png",
+    "/templates/wedding-wax-seal-10-gift.png",
+    "/templates/wedding-wax-seal-11-rsvp.png",
+  ],
 };
 
 export function buildInviteData(event: Event, guest: Guest, baseUrl: string): InviteData {
@@ -55,6 +66,7 @@ export function buildInviteData(event: Event, guest: Guest, baseUrl: string): In
     // when the host hasn't uploaded their own photo yet.
     envelopeVideoUrl: isWeddingWaxSeal ? WEDDING_WAX_SEAL_DEFAULTS.envelopeVideoUrl : undefined,
     heroVideoUrl: isWeddingWaxSeal && !heroImageUrl ? WEDDING_WAX_SEAL_DEFAULTS.heroVideoUrl : undefined,
+    posterSections: isWeddingWaxSeal ? WEDDING_WAX_SEAL_DEFAULTS.posterSections : undefined,
     quote: event.quote || undefined,
     quoteAttribution: event.quoteAttribution || undefined,
     timeline,
