@@ -244,11 +244,13 @@ export function Live({ data }: { data: InviteData }) {
           <motion.div
             key="envelope"
             exit={{ opacity: 0, transition: { duration: 0.5 } }}
-            className="w-full min-h-screen"
+            className="w-full"
           >
             <button
               onClick={openEnvelope}
-              className="group relative block w-full min-h-screen focus:outline-none"
+              className={`group relative block w-full focus:outline-none ${
+                data.envelopeVideoUrl ? "aspect-[480/800]" : "aspect-[3/4]"
+              }`}
               style={{
                 background: data.envelopeVideoUrl || data.envelopeImageUrl
                   ? undefined
@@ -309,7 +311,7 @@ export function Live({ data }: { data: InviteData }) {
           <motion.div key="invitation" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
             {/* Hero */}
             {data.heroVideoUrl ? (
-              <section ref={sectionRef} className="relative w-full min-h-screen">
+              <section ref={sectionRef} className="relative w-full aspect-[448/864]">
                 <video
                   src={data.heroVideoUrl}
                   autoPlay
